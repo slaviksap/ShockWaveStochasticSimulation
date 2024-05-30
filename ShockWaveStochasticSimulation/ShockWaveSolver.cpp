@@ -14,7 +14,7 @@ k(k), M(M), Ninit(N), initHistoX(histSect, histMin, histMax), initHistoV(histSec
 	this->dt = dt;
 	//cellsBounds = {-15,-14,-13,-12,-11,-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,10,11,12,13,14,15};
 	cellsBounds = {};
-	for (double p = -25; p <= 25; p += 1)
+	for (double p = -15; p <= 15; p += 0.1)
 		cellsBounds.push_back(p);
 	/*cellsBounds = {-14, -12, -10, -8, -6, -5, -4, -3, -2, -1.5, -1.2, -0.9, -0.7, -0.5, -0.3, -0.2, -0.15, -0.1, -0.05, -0.03, -0.01, 0, 0.01, 0.03, 0.05,
 		0.1, 0.15, 0.2, 0.3, 0.5, 0.7, 0.9, 1.2, 1.5, 2, 3, 4, 5, 6, 8, 10, 12, 14};*/
@@ -33,7 +33,7 @@ k(k), M(M), Ninit(N), initHistoX(histSect, histMin, histMax), initHistoV(histSec
 	rhoX.assign(visuaTimeSteps, Histogram(histSect, histMin, histMax));
 	vX.assign(visuaTimeSteps, Histogram(histSect, histMin, histMax));
 	TX.assign(visuaTimeSteps, Histogram(histSect, histMin, histMax));
-	distr.assign(visuaTimeSteps, Histogram(200, -5, 20));
+	distr.assign(visuaTimeSteps, Histogram(300, -5, 20));
 	//omp_set_num_threads(8);
 }
 double ShockWaveParams::sigma(double T)
@@ -49,7 +49,7 @@ void ShockWaveParams::CalcParams()
 	u1 = D - Ma * (2 + (gamma - 1) * Ma2) / ((gamma + 1) * Ma2);
 	u2 = 0;
 	p2 = 1 / gamma;
-	p1 = p2 * (2 * gamma * Ma2 - gamma + 1) / (gamma + 1);	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	p1 = p2 * (2 * gamma * Ma2 - gamma + 1) / (gamma + 1);
 	T1 = gamma * p1 / rho1;
 	T2 = gamma * p2 / rho2;
 	sigma1 = sigma(T1);
@@ -164,7 +164,7 @@ void ShockWaveSolver::Solve()
 		double StartMass = Mass(cells);
 		for (int timeStep = 1; timeStep <= k; ++timeStep)
 		{
-			//#pragma omp parallel for schedule(dynamic)
+			#pragma omp parallel for schedule(dynamic)
 			for (int i = 0; i < cells.size(); ++i)
 			{
 				if (!useDiffusion || cells[i].left >= leftDiffusion && cells[i].right <= rightDiffusion)
@@ -232,7 +232,6 @@ void ShockWaveSolver::UpdateCells()
 		movingParticles.insert(movingParticles.end(), forMoves, cell.layer.end());
 		cell.layer.erase(forMoves, cell.layer.end());
 	}
-	//Refill(movingParticles);
 	for (auto& particle : movingParticles)
 	{
 		double x = particle.x;

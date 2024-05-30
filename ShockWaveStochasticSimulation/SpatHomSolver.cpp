@@ -28,8 +28,6 @@ void SpatHomSolver::InitialDistribution(double m, double u, double sigma)
 		particle.v.y = norm(Randomizer::gen());
 		particle.v.z = norm(Randomizer::gen());
 
-		//particle.x = uni(Randomizer::gen());
-
 		particle.mass = m;
 	}
 	DistribUniformly();
@@ -66,7 +64,7 @@ DataInfo SpatHomSolver::CalculateStep()
 			auto w = Randomizer::sampleOmega();
 			double prod = dot(w, layer[i].v - layer[j].v);
 			double l = abs(prod) * dt;
-			double lambda = l / M / Kn / 2 * dw * rho * F.Get(layer[j].v) * mAmb;// F.Get(layer[j].v, V, T) * M;// * F.Get(layer[j].v) * mAmb;s
+			double lambda = l / M / Kn / 2 * dw * rho * F.Get(layer[j].v) * mAmb;
 
 			if (Randomizer::sampleUni() < lambda)
 			{
@@ -86,8 +84,8 @@ DataInfo SpatHomSolver::CalculateLangevinStep()
 	N = layer.size();
 	double avgV = MacroVelocity().x;
 	double T = Temperature();
-	const double a = sqrt(T);// abs(avgV);
-	const double sigma = sqrt(2 * T * a);//sqrt(3.0)*pow(T, 0.75);//
+	const double a = sqrt(T);
+	const double sigma = sqrt(2 * T * a);
 	DataInfo info;
 	for (int i = 0; i < N; ++i)
 	{
@@ -158,7 +156,7 @@ double SmoothFunction(double x, double left, double right, double leftValue, dou
 	constexpr double C23 = 2.0 / 3.0;
 	constexpr double C43 = 4.0 / 3.0;
 	const double M = 2 / (right - left);
-	const double L = 0;// left + (right - left) / 2;
+	const double L = left + (right - left) / 2;
 	const double scale = leftValue - rightValue;
 	return (((-x * M + L) - pow(-x * M + L, 3) / 3 + C23) / C43) * scale + rightValue;
 }

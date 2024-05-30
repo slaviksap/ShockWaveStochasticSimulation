@@ -30,8 +30,6 @@ public:
 	}
 	Vec3 operator/(const double c)
 	{
-		//if (c < 1e-16)
-		//	throw "Division by zero";
 		assert(c > 1e-16, "Division by zero");
 		return Vec3(x / c, y / c, z / c);
 	}
